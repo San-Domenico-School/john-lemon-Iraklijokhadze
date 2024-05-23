@@ -8,43 +8,53 @@ It is a component of the GameEndingTrigger.
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.SceneManagement; 
 public class GameEnding : MonoBehaviour
 {
     [SerializeField] private GameObject player;
     [SerializeField] private CanvasGroup exitBackgroundImageCanvasGroup;
+    [SerializeField] private CanvasGroup caughtBackgroundImageCanvasGroup;
+    [SerializeField] private bool isPlayerCaught;
 
-    // Additional fields
     private float fadeDuration = 1.0f;
     private float displayImageDuration = 1.0f;
     private float timer;
     private bool isPlayerAtExit;
 
-    // Start is called before the first frame update
     void Start()
     {
         fadeDuration = 1.0f;
         displayImageDuration = 1.0f;
     }
 
-    // Update is called once per frame
     void Update()
     {
         if (isPlayerAtExit)
         {
-            EndLevel();
+            EndLevel(exitBackgroundImageCanvasGroup, false);
+        }
+        else if (isPlayerCaught)
+        {
+            EndLevel(caughtBackgroundImageCanvasGroup, true);
         }
     }
 
-    void EndLevel()
+    void EndLevel(CanvasGroup image, bool restartGame) 
     {
         timer += Time.deltaTime;
 
-        exitBackgroundImageCanvasGroup.alpha = timer / fadeDuration;
+        image.alpha = timer / fadeDuration; 
 
         if (timer > fadeDuration + displayImageDuration)
         {
-            Application.Quit();
+            if (restartGame) 
+            {
+                SceneManager.LoadScene(0);
+            }
+            else 
+            {
+                Application.Quit();
+            }
         }
     }
 
@@ -55,4 +65,11 @@ public class GameEnding : MonoBehaviour
             isPlayerAtExit = true;
         }
     }
+
+    
+    public void CaughtPlayer()
+    {
+        isPlayerCaught = true;
+    }
 }
+
