@@ -8,14 +8,18 @@ It is a component of the GameEndingTrigger.
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement; 
+using UnityEngine.SceneManagement;
+
 public class GameEnding : MonoBehaviour
 {
     [SerializeField] private GameObject player;
     [SerializeField] private CanvasGroup exitBackgroundImageCanvasGroup;
     [SerializeField] private CanvasGroup caughtBackgroundImageCanvasGroup;
     [SerializeField] private bool isPlayerCaught;
+    [SerializeField] private AudioSource exitAudio;
+    [SerializeField] private AudioSource caughtAudio;
 
+    private bool hasAudioPlayed;
     private float fadeDuration = 1.0f;
     private float displayImageDuration = 1.0f;
     private float timer;
@@ -31,27 +35,35 @@ public class GameEnding : MonoBehaviour
     {
         if (isPlayerAtExit)
         {
-            EndLevel(exitBackgroundImageCanvasGroup, false);
+            EndLevel(exitBackgroundImageCanvasGroup, false, exitAudio);
         }
         else if (isPlayerCaught)
         {
-            EndLevel(caughtBackgroundImageCanvasGroup, true);
+            EndLevel(caughtBackgroundImageCanvasGroup, true, caughtAudio);
         }
     }
 
-    void EndLevel(CanvasGroup image, bool restartGame) 
+    void EndLevel(CanvasGroup image, bool restartGame, AudioSource audioSource)
     {
+
+        if (!hasAudioPlayed)
+        {
+            Debug.Log("EndLevel:51");
+            audioSource.Play();
+            hasAudioPlayed = true;
+        }
         timer += Time.deltaTime;
 
-        image.alpha = timer / fadeDuration; 
+        image.alpha = timer / fadeDuration;
 
         if (timer > fadeDuration + displayImageDuration)
         {
-            if (restartGame) 
+
+            if (restartGame)
             {
                 SceneManager.LoadScene(0);
             }
-            else 
+            else
             {
                 Application.Quit();
             }
@@ -66,7 +78,6 @@ public class GameEnding : MonoBehaviour
         }
     }
 
-    
     public void CaughtPlayer()
     {
         isPlayerCaught = true;

@@ -17,6 +17,7 @@ public class NewBehaviourScript : MonoBehaviour
     Rigidbody rb;
     Quaternion rotation;
     Vector3 movement;
+    AudioSource audioSource; // Declare AudioSource field
 
     // Start is called before the first frame update
     void Start()
@@ -33,6 +34,9 @@ public class NewBehaviourScript : MonoBehaviour
         // Initialize movement and rotation
         movement = Vector3.zero;
         rotation = Quaternion.identity;
+
+        // Initialize audioSource to the AudioSource component of the Player
+        audioSource = GetComponent<AudioSource>();
     }
 
     // Update is called once per frame
@@ -57,16 +61,18 @@ public class NewBehaviourScript : MonoBehaviour
     // Sets the value of the IsWalking parameter in the Animator based on the value of the movement
     private void SetIsWalking()
     {
-        
         if (Mathf.Approximately(movement.magnitude, 0f))
         {
-           
             animator.SetBool("IsWalking", false);
+            audioSource.Stop(); // Stop audio when not walking
         }
         else
         {
-           
             animator.SetBool("IsWalking", true);
+            if (!audioSource.isPlaying)
+            {
+                audioSource.Play(); // Play audio when walking
+            }
         }
     }
 
@@ -105,3 +111,4 @@ public class NewBehaviourScript : MonoBehaviour
         SetRotation();
     }
 }
+
